@@ -13,6 +13,11 @@ import org.bukkit.Bukkit;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+/**
+ * 
+ * @author Simon U.
+ * 
+ */
 public abstract class PlayerLogFileManager {
 	// This location is relative to the jar file (I believe).
 	public static final String folderLocation = "./PlayerLogs/";

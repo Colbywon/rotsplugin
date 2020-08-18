@@ -3,6 +3,11 @@ package org.cinemacraftstudios.PlayerLog;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * 
+ * @author Simon U.
+ *
+ */
 public class PlayerLog {
 	private UUID uuid;
 	private String name;

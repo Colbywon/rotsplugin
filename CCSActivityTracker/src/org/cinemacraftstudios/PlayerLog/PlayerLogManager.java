@@ -9,6 +9,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * 
+ * @author Simon U.
+ * 
+ */
 public class PlayerLogManager implements Listener {
 	private HashMap<UUID, PlayerLog> playerLogs = new HashMap<UUID, PlayerLog>();
 
