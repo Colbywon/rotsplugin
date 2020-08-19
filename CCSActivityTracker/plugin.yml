@@ -3,5 +3,5 @@ name: CCSActivityTracker
 version: '0.2'
 description: A plugin to track activity of our builders on our servers
 load: POSTWORLD
-author: Noah S., [add_yourself]
+author: Noah S., Simon U., [add_yourself]
 website: cinemacraftstudios.org
