@@ -14,15 +14,23 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 /**
+ * This class handles saving and loading PlayerLog instances.
  * 
  * @author Simon U.
  * 
  */
 public abstract class PlayerLogFileManager {
 	// This location is relative to the jar file (I believe).
-	public static final String folderLocation = "./PlayerLogs/";
+	public static final String FOLDER_LOCATION = "./PlayerLogs/";
 	private static Gson gson = new Gson();
 
+	/**
+	 * Saves a PlayerLog to a folder Works by converting the PlayerLog to json and
+	 * then storing it in the specified location This can be replaced with a real
+	 * database in the future.
+	 * 
+	 * @param log
+	 */
 	public static void SavePlayerLogToFile(PlayerLog log) {
 		// Convert PlayerLog object to JSON
 		String json = gson.toJson(log);
@@ -60,6 +68,13 @@ public abstract class PlayerLogFileManager {
 		}
 	}
 
+	/**
+	 * Loads the PlayerLog that matches the uuid. Converts the json to a PlayerLog
+	 * instance. If no file is found, then it creates a new instance of PlayerLog
+	 * 
+	 * @param uuid
+	 * @return
+	 */
 	public static PlayerLog ReadPlayerLogFromFile(UUID uuid) {
 		File playerFile = new File(pathToFile(uuid));
 		if (!playerFile.exists()) {
@@ -81,6 +96,6 @@ public abstract class PlayerLogFileManager {
 	}
 
 	private static String pathToFile(UUID uuid) {
-		return folderLocation + uuid.toString() + ".json";
+		return FOLDER_LOCATION + uuid.toString() + ".json";
 	}
 }

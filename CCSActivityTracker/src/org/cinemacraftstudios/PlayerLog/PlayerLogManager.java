@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
+ * Handles the contruction and destruction of the playerlogs instances. To
+ * conserve memory and performance only the players that are logged in are
+ * stored in memory.
  * 
  * @author Simon U.
  * 
@@ -32,6 +35,11 @@ public class PlayerLogManager implements Listener {
 		playerLogs.put(log.GetUUID(), log);
 	}
 
+	/**
+	 * Remove the PlayerLog from the HashMap and set the end date for the session.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		UUID uuid = event.getPlayer().getUniqueId();

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
+ * Hold the player logs. I.e the player sessions. And possibly block placement
+ * data in the future
  * 
  * @author Simon U.
  *
