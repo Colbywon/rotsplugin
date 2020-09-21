@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -57,6 +58,24 @@ public class PlayerStatsManager implements Listener {
 		PlayerStats log = GetPlayerStats(uuid);
 		
 		log.getCurrentSession().blocksPlaced++;
+	}
+	
+	/**
+	 * Gets called every time a player executes a command
+	 * if two slashes are found in the beginning of a message then
+	 * increase the bukkitCommandsUsed count
+	 * @param event
+	 */
+	@EventHandler
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		String msg = event.getMessage();
+		if (msg.startsWith("//")) {
+			Player p = event.getPlayer();
+			UUID uuid = p.getUniqueId();
+			PlayerStats log = GetPlayerStats(uuid);
+			
+			log.getCurrentSession().bukkitCommandsUsed++;
+		}
 	}
 	
 	public PlayerStats GetPlayerStats(UUID uuid) {
