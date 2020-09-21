@@ -1,4 +1,4 @@
-package org.cinemacraftstudios.PlayerLog;
+package org.cinemacraftstudios.PlayerStats;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,25 +14,25 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 /**
- * This class handles saving and loading PlayerLog instances.
+ * This class handles saving and loading PlayerStats instances.
  * 
  * @author Simon U.
  * 
  */
-public abstract class PlayerLogFileManager {
+public abstract class PlayerStatsFileManager {
 	// This location is relative to the jar file (I believe).
-	public static final String FOLDER_LOCATION = "./PlayerLogs/";
+	public static final String FOLDER_LOCATION = "./PlayerStats/";
 	private static Gson gson = new Gson();
 
 	/**
-	 * Saves a PlayerLog to a folder Works by converting the PlayerLog to json and
+	 * Saves a PlayerStats to a folder Works by converting the PlayerStats to json and
 	 * then storing it in the specified location This can be replaced with a real
 	 * database in the future.
 	 * 
 	 * @param log
 	 */
-	public static void SavePlayerLogToFile(PlayerLog log) {
-		// Convert PlayerLog object to JSON
+	public static void SavePlayerStatsToFile(PlayerStats log) {
+		// Convert PlayerStats object to JSON
 		String json = gson.toJson(log);
 
 		// Creates a new File thats called the players uuid.
@@ -69,25 +69,25 @@ public abstract class PlayerLogFileManager {
 	}
 
 	/**
-	 * Loads the PlayerLog that matches the uuid. Converts the json to a PlayerLog
-	 * instance. If no file is found, then it creates a new instance of PlayerLog
+	 * Loads the PlayerStats that matches the uuid. Converts the json to a PlayerStats
+	 * instance. If no file is found, then it creates a new instance of PlayerStats
 	 * 
 	 * @param uuid
 	 * @return
 	 */
-	public static PlayerLog ReadPlayerLogFromFile(UUID uuid) {
+	public static PlayerStats ReadPlayerStatsFromFile(UUID uuid) {
 		File playerFile = new File(pathToFile(uuid));
 		if (!playerFile.exists()) {
 			Bukkit.getLogger().fine("Player has no log file. Creating new file.");
-			PlayerLog log = new PlayerLog(uuid);
-//			SavePlayerLogToFile(log);
+			PlayerStats log = new PlayerStats(uuid);
+//			SavePlayerStatsToFile(log);
 			return log;
 		}
 		InputStreamReader isReader;
 		try {
 			isReader = new InputStreamReader(new FileInputStream(playerFile), "UTF-8");
 			JsonReader jsonReader = new JsonReader(isReader);
-			PlayerLog log = gson.fromJson(jsonReader, PlayerLog.class);
+			PlayerStats log = gson.fromJson(jsonReader, PlayerStats.class);
 			return log;
 		} catch (Exception e) {
 			Bukkit.getLogger().severe("Couldn't load player log:" + e.toString());

@@ -1,4 +1,4 @@
-package org.cinemacraftstudios.PlayerLog;
+package org.cinemacraftstudios.PlayerStats;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -10,12 +10,12 @@ import java.util.UUID;
  * @author Simon U.
  *
  */
-public class PlayerLog {
+public class PlayerStats {
 	private UUID uuid;
 	private String name;
 	private ArrayList<Session> sessions = new ArrayList<Session>();
 
-	public PlayerLog(UUID uuid) {
+	public PlayerStats(UUID uuid) {
 		this.uuid = uuid;
 	}
 
