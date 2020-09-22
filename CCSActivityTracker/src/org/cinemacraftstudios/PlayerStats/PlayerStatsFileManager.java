@@ -9,29 +9,31 @@ import java.io.InputStreamReader;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.cinemacraftstudios.api.APIInterface;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 /**
- * This class handles saving and loading PlayerStats instances.
+ * This class handles saving and loading PlayerStats instances to the local
+ * filesystem
  * 
  * @author Simon U.
  * 
  */
-public abstract class PlayerStatsFileManager {
+public class PlayerStatsFileManager implements APIInterface {
 	// This location is relative to the jar file (I believe).
-	public static final String FOLDER_LOCATION = "./PlayerStats/";
-	private static Gson gson = new Gson();
+	public final String FOLDER_LOCATION = "./PlayerStats/";
+	private Gson gson = new Gson();
 
 	/**
-	 * Saves a PlayerStats to a folder Works by converting the PlayerStats to json and
-	 * then storing it in the specified location This can be replaced with a real
-	 * database in the future.
+	 * Saves a PlayerStats to a folder Works by converting the PlayerStats to json
+	 * and then storing it in the specified location This can be replaced with a
+	 * real database in the future.
 	 * 
 	 * @param log
 	 */
-	public static void SavePlayerStatsToFile(PlayerStats log) {
+	private void savePlayerStatsToFile(PlayerStats log) {
 		// Convert PlayerStats object to JSON
 		String json = gson.toJson(log);
 
@@ -52,8 +54,6 @@ public abstract class PlayerStatsFileManager {
 			}
 		}
 
-//		Bukkit.getLogger().finer(playerFile.getAbsolutePath());
-
 		try {
 			FileWriter playerWriter;
 			playerWriter = new FileWriter(playerFile.getAbsoluteFile(), false);
@@ -69,18 +69,18 @@ public abstract class PlayerStatsFileManager {
 	}
 
 	/**
-	 * Loads the PlayerStats that matches the uuid. Converts the json to a PlayerStats
-	 * instance. If no file is found, then it creates a new instance of PlayerStats
+	 * Loads the PlayerStats that matches the uuid. Converts the json to a
+	 * PlayerStats instance. If no file is found, then it creates a new instance of
+	 * PlayerStats
 	 * 
 	 * @param uuid
 	 * @return
 	 */
-	public static PlayerStats ReadPlayerStatsFromFile(UUID uuid) {
+	private PlayerStats readPlayerStatsFromFile(UUID uuid) {
 		File playerFile = new File(pathToFile(uuid));
 		if (!playerFile.exists()) {
 			Bukkit.getLogger().fine("Player has no log file. Creating new file.");
 			PlayerStats log = new PlayerStats(uuid);
-//			SavePlayerStatsToFile(log);
 			return log;
 		}
 		InputStreamReader isReader;
@@ -95,7 +95,34 @@ public abstract class PlayerStatsFileManager {
 		return null;
 	}
 
-	private static String pathToFile(UUID uuid) {
+	private String pathToFile(UUID uuid) {
 		return FOLDER_LOCATION + uuid.toString() + ".json";
+	}
+
+	@Override
+	/**
+	 * Used for returning all the stored data for a player.
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public PlayerStats GetPlayerStats(UUID uuid) {
+		return readPlayerStatsFromFile(uuid);
+	}
+
+	@Override
+	/**
+	 * Adds the session to the stored file.
+	 * 
+	 * In the future this will hopefully only post request with the session json as
+	 * the body and the backend will handle adding it to the list.
+	 * 
+	 * @param uuid
+	 * @param session
+	 */
+	public void PostSession(UUID uuid, Session session) {
+		PlayerStats ps = readPlayerStatsFromFile(uuid);
+		ps.GetSessions().add(session);
+		savePlayerStatsToFile(ps);
 	}
 }

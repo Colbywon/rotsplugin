@@ -4,81 +4,60 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.cinemacraftstudios.api.APIInterface;
 
 /**
- * Handles the contruction and destruction of the PlayerStats instances. To
- * conserve memory and performance only the players that are logged in are
- * stored in memory.
+ * Handles storing and interfacing with {@link Session}
  * 
- * @author Simon U.
- * 
+ * @author Simon
+ *
  */
-public class PlayerStatsManager implements Listener {
-	private HashMap<UUID, PlayerStats> PlayerStats = new HashMap<UUID, PlayerStats>();
+public class PlayerStatsManager {
+	private static PlayerStatsManager instance = null;
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		PlayerStats log = PlayerStatsFileManager.ReadPlayerStatsFromFile(event.getPlayer().getUniqueId());
-		// Every time a player logs in update the name
-		// This isn't strictly necessary since you can get
-		// the player name from the uuid. But this makes
-		// it easier when going through the logs.
-		log.SetName(event.getPlayer().getDisplayName());
-		Session ps = new Session();
-		ps.start = new Date();
-		log.GetSessions().add(ps);
+	private APIInterface api = new PlayerStatsFileManager();
 
-		PlayerStats.put(log.GetUUID(), log);
+	private HashMap<UUID, Session> playerSessions = new HashMap<UUID, Session>();
+
+	public Session AddSession(UUID uuid) {
+		// When a player joins start a new Session for that player.
+		// And store it in the PlayerSession variable.
+		Session session = new Session();
+		session.start = new Date();
+
+		return AddSession(uuid, session);
 	}
 
-	/**
-	 * Remove the PlayerStats from the HashMap and set the end date for the session.
-	 * 
-	 * @param event
-	 */
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		UUID uuid = event.getPlayer().getUniqueId();
-		PlayerStats log = PlayerStats.remove(uuid);
-		log.getCurrentSession().end = new Date();
-		PlayerStatsFileManager.SavePlayerStatsToFile(log);
+	public Session AddSession(UUID uuid, Session session) {
+		return playerSessions.put(uuid, session);
 	}
-	
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent event) {
-		Player p = event.getPlayer();
-		UUID uuid = p.getUniqueId();
-		PlayerStats log = GetPlayerStats(uuid);
-		
-		log.getCurrentSession().blocksPlaced++;
+
+	public Session GetSession(UUID uuid) {
+		Session session = playerSessions.get(uuid);
+		if (session == null)
+			session = AddSession(uuid);
+		return session;
 	}
-	
-	/**
-	 * Gets called every time a player executes a command
-	 * if two slashes are found in the beginning of a message then
-	 * increase the bukkitCommandsUsed count
-	 * @param event
-	 */
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		String msg = event.getMessage();
-		if (msg.startsWith("//")) {
-			Player p = event.getPlayer();
-			UUID uuid = p.getUniqueId();
-			PlayerStats log = GetPlayerStats(uuid);
-			
-			log.getCurrentSession().bukkitCommandsUsed++;
+
+	public Session RemoveSession(UUID uuid) {
+		Session session = playerSessions.remove(uuid);
+		session.end = new Date();
+
+		// Sends the session to the api interface to be send to the backend or file.
+		api.PostSession(uuid, session);
+
+		return playerSessions.remove(uuid);
+	}
+
+	private PlayerStatsManager() {
+
+	}
+
+	public static PlayerStatsManager getInstance() {
+		if (instance == null) {
+			instance = new PlayerStatsManager();
 		}
-	}
-	
-	public PlayerStats GetPlayerStats(UUID uuid) {
-		return PlayerStats.get(uuid);
+
+		return instance;
 	}
 }
