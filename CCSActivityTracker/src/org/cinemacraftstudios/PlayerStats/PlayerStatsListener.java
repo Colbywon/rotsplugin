@@ -53,7 +53,7 @@ public class PlayerStatsListener implements Listener {
 		String msg = event.getMessage();
 		if (msg.startsWith("//")) {
 			UUID uuid = event.getPlayer().getUniqueId();
-			playerStatsManager.GetSession(uuid).bukkitCommandsUsed++;
+			playerStatsManager.GetSession(uuid).worldEditCommandsUsed++;
 		}
 	}
 }

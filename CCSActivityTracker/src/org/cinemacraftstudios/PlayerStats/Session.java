@@ -12,6 +12,6 @@ public class Session {
 	public Date start;
 	public Date end;
 	public int blocksPlaced = 0;
-	public int bukkitCommandsUsed = 0;
+	public int worldEditCommandsUsed = 0;
 	public int blocksChangedWorldEdit = 0;
 }
