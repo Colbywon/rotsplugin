@@ -5,53 +5,68 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import net.dv8tion.jda.api.utils.Timestamp;
+import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.cinemacraftstudios.discord.PlayerMsgType;
+import org.cinemacraftstudios.PlayerStats.PlayerStatsManager;
 import org.cinemacraftstudios.main.CCSActivityTracker;
-import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 
-public class CCSDiscordIntegration implements EventListener {
+public class CCSDiscordIntegration extends ListenerAdapter {
 
     private final JDA jda;
+    private final FileConfiguration conf;
     private TextChannel activityChannel;
 
     public CCSDiscordIntegration(CCSActivityTracker plugin) {
-        FileConfiguration conf = plugin.getConfig();
+        conf = plugin.getConfig();
 
         JDABuilder builder = JDABuilder.createDefault(conf.getString("dc.token", "idiot"));
 
         builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY);
         builder.setBulkDeleteSplittingEnabled(false);
         builder.setActivity(Activity.customStatus("having an existential crisis"));
-        builder.addEventListeners(this); //wait for JDA to finish setup
+        builder.setEventManager(new AnnotatedEventManager());
+        builder.addEventListeners(this); //wait for JDA to finish setup (non-blocking)
 
         jda = builder.build();
     }
 
-    @Override
-    public void onEvent(@NotNull GenericEvent genericEvent) {
+    @SubscribeEvent
+    public void onReadyEvent(ReadyEvent event) {
+        //wait for JDA to finish setup (non-blocking)
+        setupActivityChannel();
+    }
 
-        if (!(genericEvent instanceof ReadyEvent)) {
-            System.out.println("genericEvent = " + genericEvent);
+    /**
+     * reads the channel ID from the config and updates the activityChannel
+     */
+    public void setupActivityChannel() {
+        long channelID = conf.getLong("dc.channel");
+        if(channelID == 0) {
+            System.err.println("No channel ID was provided");
             return;
         }
-
-        activityChannel = jda.getTextChannelById(730178710262513774L);
+        activityChannel = jda.getTextChannelById(channelID);
         sendStatus(true);
     }
 
-    public void sendPlayerMessage(String name, PlayerMsgType type, int currentPlayers, int maxPlayers) {
+    /**
+     * Sends a message into the #activity channel
+     * @param name Player name
+     * @param type Kind of Event
+     */
+    public void sendPlayerMessage(String name, PlayerMsgType type) {
+        if(activityChannel == null) return;
+
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(String.format("Player %s (%d/%d)", type,
-                currentPlayers, maxPlayers), "https://cinemacraftstudios.org/");
+                PlayerStatsManager.getInstance().getCurrentSessionCount(), 40), "https://cinemacraftstudios.org/");
         eb.setDescription(String.format("%s %s the build server.", name, type));
         eb.setColor(type == PlayerMsgType.JOINED ? Color.green : Color.red);
         eb.setAuthor(name, null, "https://github.com/N0ah-S/cinemacraftstudios.com/blob/main/img/mc_logo_thumb.png?raw=true");
@@ -60,7 +75,13 @@ public class CCSDiscordIntegration implements EventListener {
         activityChannel.sendMessageEmbeds(eb.build()).queue();
     }
 
+    /**
+     * Sends a message into the #activity channel and gracefully shuts down JDA when online == false
+     * @param online whether the mc server is now online/offline
+     */
     public void sendStatus(boolean online) {
+        if(activityChannel == null) return; //obligatory NullPointer check
+
         EmbedBuilder eb = new EmbedBuilder();
         if(online) {
             eb.setTitle("The server is online now.", "https://cinemacraftstudios.org/");
@@ -70,11 +91,10 @@ public class CCSDiscordIntegration implements EventListener {
             eb.setDescription("I'm really down rn <:sadge:797884241068425266>");
         }
         eb.setColor(online ? Color.blue : Color.red);
-        //eb.setAuthor("Gonk", null, "https://github.com/N0ah-S/cinemacraftstudios.com/blob/main/img/mc_logo_thumb.png?raw=true");
         eb.setTimestamp(OffsetDateTime.now());
         eb.setFooter("mc.cinemacraftstudios.org", "https://cinemacraftstudios.org/img/logo-white.PNG");
         activityChannel.sendMessageEmbeds(eb.build()).queue();
+
+        if(!online) jda.shutdown();
     }
-
-
 }

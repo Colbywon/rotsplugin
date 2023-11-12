@@ -22,6 +22,8 @@ public class CCSActivityTracker extends JavaPlugin {
 	public void onEnable() {
 		System.out.println("Hello there");
 
+		saveDefaultConfig();
+
 		discord = new CCSDiscordIntegration(this);
 
 		getServer().getPluginManager().registerEvents(new PlayerStatsListener(), this);
@@ -30,9 +32,11 @@ public class CCSActivityTracker extends JavaPlugin {
 		WorldEdit.getInstance().getEventBus().register(new WorldEditHook());
 	}
 
+
 	@Override
 	public void onDisable() {
 		discord.sendStatus(false);
+
 		System.out.println("General Kenobi");
 	}
 
