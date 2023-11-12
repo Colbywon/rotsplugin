@@ -15,8 +15,13 @@ import com.sk89q.worldedit.WorldEdit;
  */
 public class CCSActivityTracker extends JavaPlugin {
 
+	private CCSDiscordIntegration discord;
+
 	public void onEnable() {
 		System.out.println("Hello there");
+
+		discord = new CCSDiscordIntegration(this);
+
 		getServer().getPluginManager().registerEvents(new PlayerStatsListener(), this);
 
 		WorldEdit.getInstance().getEventBus().register(new WorldEditHook());
