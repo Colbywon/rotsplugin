@@ -1,0 +1,8 @@
+name: CCSActivityTracker 
+version: '${project.version}'
+main: org.cinemacraftstudios.main.CCSActivityTracker
+description: A plugin to track activity of our builders on our servers
+authors: [Simon U., Noah S.]
+prefix: CCS
+website: https://cinemacraftstudios.org/
+load: POSTWORLD
