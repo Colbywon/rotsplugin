@@ -1,13 +1,16 @@
 # About
-This plugin is for the user on-time managment.
+Welcome to our volunteer project, merging creativity and innovation to bring the Star Wars cinematic experience to Minecraft.
+Our WorldEdit tracking plugin should help with that, by tracking interesting metrics to embrace competitive building rivalry.
 
 # Instructions
-You'll find a eclipse project you have to import and a testserver. Please copy it (the server) and don't edit it in this repository.
+You'll find a Maven project that should just work out of the box with your IDE of choice.
+Just run the *package* task to export the .jar file. 
 
-Please comment your code if needed. If i don't understand code and you're not able to explain it afterwards it'll get deleted due security reasons, so ...
-* always comment your code(at least the information block for public methods)
-* add yourself in the author list of every class you changed something important
-* usefull commit messages please - bad example: Bug fix, Made it better, fghjghjdk
-* Don't try to add back doors
+# Contribution Guidelines
+We believe in fostering a collaborative and secure environment. To ensure smooth collaboration, please adhere to the following guidelines:
 
-### And now back to work guys
+- Comment your code, especially the information block for public methods. This helps everyone understand the code better.
+- If you make significant changes to a class, be sure to add yourself to the author list.
+- Use meaningful commit messages. Avoid vague examples like "Bug fix" or "Made it better." Let's keep things clear and informative.
+
+### Let's make building fun and efficient! 🚀
