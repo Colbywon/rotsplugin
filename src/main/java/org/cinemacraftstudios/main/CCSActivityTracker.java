@@ -5,6 +5,8 @@ import org.cinemacraftstudios.PlayerStats.PlayerStatsListener;
 import org.cinemacraftstudios.WorldEditIntegration.WorldEditHook;
 
 import com.sk89q.worldedit.WorldEdit;
+import org.cinemacraftstudios.discord.CCSDiscordIntegration;
+import org.cinemacraftstudios.discord.JoinLeaveListener;
 
 
 /**
@@ -23,12 +25,14 @@ public class CCSActivityTracker extends JavaPlugin {
 		discord = new CCSDiscordIntegration(this);
 
 		getServer().getPluginManager().registerEvents(new PlayerStatsListener(), this);
+		getServer().getPluginManager().registerEvents(new JoinLeaveListener(discord), this);
 
 		WorldEdit.getInstance().getEventBus().register(new WorldEditHook());
 	}
 
 	@Override
 	public void onDisable() {
+		discord.sendStatus(false);
 		System.out.println("General Kenobi");
 	}
 
