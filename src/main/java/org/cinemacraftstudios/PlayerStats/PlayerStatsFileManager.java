@@ -99,18 +99,19 @@ public class PlayerStatsFileManager implements APIInterface {
 		return FOLDER_LOCATION + uuid.toString() + ".json";
 	}
 
-	@Override
+
 	/**
 	 * Used for returning all the stored data for a player.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
+	@Override
 	public PlayerStats GetPlayerStats(UUID uuid) {
 		return readPlayerStatsFromFile(uuid);
 	}
 
-	@Override
+
 	/**
 	 * Adds the session to the stored file.
 	 * 
@@ -120,6 +121,7 @@ public class PlayerStatsFileManager implements APIInterface {
 	 * @param uuid
 	 * @param session
 	 */
+	@Override
 	public void PostSession(UUID uuid, Session session) {
 		PlayerStats ps = readPlayerStatsFromFile(uuid);
 		ps.GetSessions().add(session);

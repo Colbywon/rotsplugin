@@ -60,4 +60,11 @@ public class PlayerStatsManager {
 
 		return instance;
 	}
+
+	/**
+	 * @return the number of active sessions in memory/currently online players
+	 */
+	public int getCurrentSessionCount() {
+		return playerSessions.size();
+	}
 }
